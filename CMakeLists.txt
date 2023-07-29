@@ -14,7 +14,7 @@ add_subdirectory(3rdParty)
 
 # OpenCV
 if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
-    find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED)
 endif()
 
 # Main library
@@ -73,6 +73,43 @@ tg_add_library_headers(pdfla
     libsrc/Private/ParagraphAndSentenceManager.cpp
     libsrc/Private/ParagraphAndSentenceManager.h
 )
+
+message("CMAKE_SYSTEM_NAME:${CMAKE_SYSTEM_NAME}")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+add_executable(webpdf
+    wasm/interface.cpp
+)
+target_link_libraries(webpdf
+    pdfla
+    fpdfapi
+    fdrm
+    fpdfdoc
+    fpdftext
+    fxcodec
+    fxcrt
+    fxge    
+)
+target_compile_options(webpdf
+    PUBLIC
+    -flto
+    -fno-exceptions
+)
+target_link_options(webpdf
+    PUBLIC
+    -Oz
+    -sINVOKE_RUN=0
+    -sASSERTIONS=1
+    -sELIMINATE_DUPLICATE_FUNCTIONS=1
+    -sFILESYSTEM=0
+    -sMODULARIZE=1
+    -flto
+    --bind
+    --no-entry
+    --post-js ${CMAKE_CURRENT_SOURCE_DIR}/wasm/post.js
+    --closure 1
+)
+endif()
+
 
 # Finalize the settings
 tg_process_all_targets()

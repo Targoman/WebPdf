@@ -11,6 +11,9 @@ public:
     float width() const {return this->X1 - this->X0;}
     float height() const {return this->Y1 - this->Y0;}
 
+    void setWidth(float v) {this->X1 = this->X0 + v;}
+    void setHeight(float v) {this->Y1 = this->Y0 + v;}
+
     float X0, X1, Y0, Y1;
 
     stuBox(float _x0 = 0, float _y0 = 0, float _x1 = 0,  float _y1 = 0) :
