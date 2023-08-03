@@ -1,0 +1,91 @@
+<html dir="ltr" mozdisallowselectionprint="" moznomarginboxes="">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="google" content="notranslate" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>WebPDF Test</title>
+        <link rel="stylesheet" href="webpdfui.min.css" />
+        <style>
+            html,
+            body {
+                padding: 0;
+                margin: 0;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+            #cnt {
+                flex: 1;
+            }
+            #textContainer {
+                height: 25%;
+                overflow: hidden;
+                overflow-y: auto;
+                background-color: beige;
+                box-sizing: border-box;
+                overflow-y: auto;
+                border-top: 2px solid;
+                position: relative;
+            }
+            #text {
+                padding: 1em 4em;
+            }
+            #gotoPrevSentence,
+            #gotoNextSentence {
+                position: absolute;
+                top: 0;
+                width: 3em;
+                height: 100%;
+                background: #ed553b;
+                display: -webkit-box;
+                display: flex;
+                -webkit-box-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                justify-content: center;
+                font-weight: 700;
+                color: #fff;
+                cursor: pointer;
+            }
+            #gotoPrevSentence:hover,
+            #gotoNextSentence:hover {
+                background-color: #ca3e26;
+            }
+
+            #gotoPrevSentence {
+                left: 0;
+            }
+            #gotoNextSentence {
+                right: 0;
+            }
+            @media (orientation: landscape) {
+                #textContainer {
+                    height: 6em;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="cnt"></div>
+        <div id="textContainer">
+            <div id="gotoPrevSentence">«</div>
+            <div id="text"></div>
+            <div id="gotoNextSentence">»</div>
+        </div>
+        <script src="jscolor.js"></script>
+        <script src="webpdfui.min.js"></script>
+        <script>
+            const webpdf = new clsTargomanPdfViewer(document.getElementById("cnt"));
+            webpdf.addEventListener("activeSentenceChanged", (snt) => {
+                document.getElementById("text").innerText = snt.text;
+            });
+            webpdf.addEventListener("pdfOpened", (info) => {
+                document.title = info.fileName + " | WebPDF Test";
+            });
+            document.getElementById("gotoPrevSentence").onclick = () => webpdf.prevSentence();
+            document.getElementById("gotoNextSentence").onclick = () => webpdf.nextSentence();
+        </script>        
+    </body>
+</html>

@@ -1,0 +1,1997 @@
+@font-face {
+    font-family: Vazir;
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-FD-WOL.eot");
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-FD-WOL.eot?#iefix") format("embedded-opentype"), url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-FD-WOL.woff") format("woff"),
+        url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-FD-WOL.ttf") format("truetype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: Vazir;
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Bold-FD-WOL.eot");
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Bold-FD-WOL.eot?#iefix") format("embedded-opentype"), url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Bold-FD-WOL.woff") format("woff"),
+        url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Bold-FD-WOL.ttf") format("truetype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: Vazir;
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Light-FD-WOL.eot");
+    src: url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Light-FD-WOL.eot?#iefix") format("embedded-opentype"), url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Light-FD-WOL.woff") format("woff"),
+        url("fonts/vazir/Farsi-Digits-Without-Latin/Vazir-Light-FD-WOL.ttf") format("truetype");
+    font-weight: 300;
+}
+
+.tgpdf {
+    --sidebar-width: 200px;
+    --navbar-height: 32px;
+    --label-color: hsl(0, 0%, 85%);
+}
+
+.tgpdf * {
+    padding: 0;
+    margin: 0;
+}
+
+.tgpdf-hidden,
+.tgpdf [hidden] {
+    display: none !important;
+}
+
+.tgpdf {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-size: 10px;
+    background-color: #404040;
+    background-image: url(./images/texture.png);
+    overflow: hidden;
+}
+
+.tgpdf,
+.tgpdf input,
+.tgpdf button,
+.tgpdf select {
+    direction: ltr;
+    font: message-box;
+    outline: none;
+}
+
+.tgpdf button {
+    cursor: pointer;
+}
+
+.tgpdf.rtl,
+.tgpdf.rtl input,
+.tgpdf.rtl button,
+.tgpdf.rtl select {
+    direction: rtl;
+    font-family: Vazir;
+}
+
+/************ Common Containers ***********/
+.tgpdf-main {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-width: 320px;
+}
+.tgpdf-print {
+    display: none;
+}
+.tgpdf-about {
+    opacity: 0;
+}
+.tgpdf-credit {
+    opacity: 0;
+}
+
+/************ Overlay Container ***********/
+.tgpdf-overlay {
+    display: table;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: hsla(0, 0%, 0%, 0.2);
+    z-index: 40000;
+}
+.tgpdf-overlay > * {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tgpdf-overlay > .container {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+.tgpdf-overlay > .container > .dialog {
+    display: inline-block;
+    padding: 15px;
+    border-spacing: 4px;
+    color: hsl(0, 0%, 85%);
+    font-size: 12px;
+    line-height: 14px;
+    background-color: #474747;
+    background-image: url(./images/texture.png), -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 32%, 0.99)), to(hsla(0, 0%, 27%, 0.95)));
+    background-image: url(./images/texture.png), linear-gradient(hsla(0, 0%, 32%, 0.99), hsla(0, 0%, 27%, 0.95));
+    border: 1px solid hsla(0, 0%, 0%, 0.5);
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/************ TGPDF viewer ***********/
+.tgpdf-viewer {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    position: absolute;
+    top: 32px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    outline: none;
+}
+.tgpdf-viewer:not(.tgpdf-fullscreen) {
+    -webkit-transition-duration: 200ms;
+    transition-duration: 200ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf.ltr .tgpdf-viewer {
+    box-shadow: inset 1px 0 0 hsla(0, 0%, 100%, 0.05);
+}
+.tgpdf.rtl .tgpdf-viewer {
+    box-shadow: inset -1px 0 0 hsla(0, 0%, 100%, 0.05);
+}
+
+/************ Sidebar ***********/
+.tgpdf-sidebar {
+    position: absolute;
+    top: 32px;
+    bottom: 0;
+    width: 200px;
+    width: var(--sidebar-width);
+    visibility: hidden;
+    z-index: 100;
+    border-top: 1px solid #333;
+    -webkit-transition-duration: 200ms;
+    transition-duration: 200ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf.ltr .tgpdf-sidebar {
+    -webkit-transition-property: left;
+    transition-property: left;
+    left: -200px;
+    left: calc(-1 * var(--sidebar-width));
+}
+.tgpdf.rtl .tgpdf-sidebar {
+    -webkit-transition-property: right;
+    transition-property: right;
+    right: -200px;
+    right: calc(-1 * var(--sidebar-width));
+}
+.loadingInProgress .tgpdf-sidebar {
+    top: 36px;
+}
+.tgpdf.tgpdf-sidebarResizing .tgpdf-sidebar {
+    -webkit-transition-duration: 0;
+    transition-duration: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.tgpdf-sidebarMoving .tgpdf-sidebar,
+.tgpdf-sidebarOpen .tgpdf-sidebar {
+    visibility: visible;
+}
+.tgpdf.ltr.tgpdf-sidebarOpen .tgpdf-sidebar {
+    left: 0;
+}
+.tgpdf.rtl.tgpdf-sidebarOpen .tgpdf-sidebar {
+    right: 0;
+}
+.tgpdf.ltr.tgpdf-sidebarOpen .tgpdf-viewer:not(.tgpdf-fullscreen) {
+    -webkit-transition-property: left;
+    transition-property: left;
+    left: 200px;
+    left: var(--sidebar-width);
+}
+.tgpdf.rtl.tgpdf-sidebarOpen .tgpdf-viewer:not(.tgpdf-fullscreen) {
+    -webkit-transition-property: right;
+    transition-property: right;
+    right: 200px;
+    right: var(--sidebar-width);
+}
+.tgpdf-sidebarResizing .tgpdf-viewer {
+    -webkit-transition-duration: 0;
+    transition-duration: 0;
+}
+.tgpdf-sidebar .tgpdf-toolbar {
+    width: 100%;
+    height: 32px;
+    background-color: #424242;
+    background-image: url(./images/texture.png), -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 30%, 0.99)), to(hsla(0, 0%, 25%, 0.95)));
+    background-image: url(./images/texture.png), linear-gradient(hsla(0, 0%, 30%, 0.99), hsla(0, 0%, 25%, 0.95));
+}
+.tgpdf.ltr .tgpdf-sidebar .tgpdf-toolbar {
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25), inset 0 -1px 0 hsla(0, 0%, 100%, 0.05), 0 1px 0 hsla(0, 0%, 0%, 0.15), 0 0 1px hsla(0, 0%, 0%, 0.1);
+}
+.tgpdf.rtl .tgpdf-sidebar .tgpdf-toolbar {
+    box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 hsla(0, 0%, 100%, 0.05), 0 1px 0 hsla(0, 0%, 0%, 0.15), 0 0 1px hsla(0, 0%, 0%, 0.1);
+}
+.tgpdf-sb-content {
+    top: 32px;
+    bottom: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    position: absolute;
+    width: 100%;
+    background-color: hsla(0, 0%, 0%, 0.1);
+}
+.tgpdf.ltr .tgpdf-sb-content {
+    left: 0;
+    box-shadow: inset -1px 0 0 hsla(0, 0%, 0%, 0.25);
+}
+.tgpdf.rtl .tgpdf-sb-content {
+    right: 0;
+    box-shadow: inset 1px 0 0 hsla(0, 0%, 0%, 0.25);
+}
+
+/************ Toolbar ***********/
+.tgpdf.ltr .tgpdf-bar-buttons {
+    margin: 3px 2px 4px 0;
+    display: inline-block;
+}
+.tgpdf.rtl .tgpdf-bar-buttons {
+    margin: 3px 0 4px 2px;
+    display: inline-block;
+}
+.tgpdf.ltr .tgpdf-bar-buttons > .tgpdf-tbtn {
+    border-radius: 0;
+    float: left;
+}
+.tgpdf.rtl .tgpdf-bar-buttons > .tgpdf-tbtn {
+    border-radius: 0;
+    float: right;
+    margin: 0;
+}
+.tgpdf-bar-buttons.tgpdf-toggled .tgpdf-tbtn {
+    margin: 0;
+}
+.tgpdf-bar-buttons:hover > .tgpdf-tbtn,
+.tgpdf-bar-buttons:focus > .tgpdf-tbtn,
+.tgpdf-bar-buttons.tgpdf-toggled > .tgpdf-tbtn,
+.tgpdf-tbtn.textButton {
+    background-color: hsla(0, 0%, 0%, 0.12);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    border: 1px solid hsla(0, 0%, 0%, 0.35);
+    border-color: hsla(0, 0%, 0%, 0.32) hsla(0, 0%, 0%, 0.38) hsla(0, 0%, 0%, 0.42);
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.15) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+    -webkit-transition-property: background-color, border-color, box-shadow;
+    transition-property: background-color, border-color, box-shadow;
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf-bar-buttons > .tgpdf-tbtn:hover,
+.tgpdf-bar-buttons > .tgpdf-tbtn:focus,
+.tgpdf-dropdown:hover,
+.tgpdf-ovbtn:hover,
+.tgpdf-ovbtn:focus,
+.tgpdf-tbtn.textButton:hover,
+.tgpdf-tbtn.textButton:focus {
+    background-color: hsla(0, 0%, 0%, 0.2);
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.15) inset, 0 0 1px hsla(0, 0%, 0%, 0.05);
+    z-index: 199;
+}
+.tgpdf-bar-buttons > .tgpdf-tbtn {
+    position: relative;
+}
+.tgpdf.ltr .tgpdf-bar-buttons > .tgpdf-tbtn:first-child,
+.tgpdf.rtl .tgpdf-bar-buttons > .tgpdf-tbtn:last-child {
+    position: relative;
+    margin: 0;
+    margin-right: -1px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-right-color: transparent;
+}
+.tgpdf.ltr .tgpdf-bar-buttons > .tgpdf-tbtn:last-child,
+.tgpdf.rtl .tgpdf-bar-buttons > .tgpdf-tbtn:first-child {
+    position: relative;
+    margin: 0;
+    margin-left: -1px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-left-color: transparent;
+}
+.tgpdf-bar-buttonsSeparator {
+    padding: 8px 0;
+    width: 1px;
+    background-color: hsla(0, 0%, 0%, 0.5);
+    z-index: 99;
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+    display: inline-block;
+    margin: 5px 0;
+}
+.tgpdf.ltr .tgpdf-bar-buttonsSeparator {
+    float: left;
+}
+.tgpdf.rtl .tgpdf-bar-buttonsSeparator {
+    float: right;
+}
+.tgpdf-bar-buttons:hover > .tgpdf-bar-buttonsSeparator,
+.tgpdf-bar-buttons.tgpdf-toggled > .tgpdf-bar-buttonsSeparator {
+    padding: 12px 0;
+    margin: 1px 0;
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.03);
+    -webkit-transition-property: padding;
+    transition-property: padding;
+    -webkit-transition-duration: 10ms;
+    transition-duration: 10ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf-tbtn.tgpdf-toggled,
+.tgpdf-bar-buttons.tgpdf-toggled > .tgpdf-tbtn.tgpdf-toggled {
+    background-color: hsla(0, 0%, 0%, 0.3);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    border-color: hsla(0, 0%, 0%, 0.4) hsla(0, 0%, 0%, 0.45) hsla(0, 0%, 0%, 0.5);
+    box-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.1) inset, 0 0 1px hsla(0, 0%, 0%, 0.2) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+    -webkit-transition-property: background-color, border-color, box-shadow;
+    transition-property: background-color, border-color, box-shadow;
+    -webkit-transition-duration: 10ms;
+    transition-duration: 10ms;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+}
+.tgpdf-tbtn.tgpdf-toggled:hover:active,
+.tgpdf-bar-buttons.tgpdf-toggled > .tgpdf-tbtn.tgpdf-toggled:hover:active {
+    background-color: hsla(0, 0%, 0%, 0.4);
+    border-color: hsla(0, 0%, 0%, 0.4) hsla(0, 0%, 0%, 0.5) hsla(0, 0%, 0%, 0.55);
+    box-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.2) inset, 0 0 1px hsla(0, 0%, 0%, 0.3) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+}
+.tgpdf.ltr .tgpdf-bar-buttons:first-child,
+.tgpdf.ltr .tgpdf-tbtn:first-child,
+.tgpdf.rtl .tgpdf-bar-buttons:last-child,
+.tgpdf.rtl .tgpdf-tbtn:last-child {
+    margin-left: 4px;
+}
+.tgpdf.ltr .tgpdf-bar-buttons:last-child,
+.tgpdf.ltr .tgpdf-tbtn:last-child,
+.tgpdf.rtl .tgpdf-bar-buttons:first-child,
+.tgpdf.rtl .tgpdf-tbtn:first-child {
+    margin-right: 4px;
+}
+
+/*-----------------------*/
+.tgpdf-toolbar input {
+    padding: 3px 6px;
+    margin: 4px 0;
+    border-radius: 2px;
+    background-color: hsla(0, 0%, 100%, 0.09);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    border-width: 1px;
+    border-style: solid;
+    border-color: hsla(0, 0%, 0%, 0.32) hsla(0, 0%, 0%, 0.38) hsla(0, 0%, 0%, 0.42);
+    box-shadow: 0 1px 0 hsla(0, 0%, 0%, 0.05) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+    color: hsl(0, 0%, 95%);
+    font-size: 12px;
+    line-height: 14px;
+    outline-style: none;
+    -webkit-transition-property: background-color, border-color, box-shadow;
+    transition-property: background-color, border-color, box-shadow;
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf-toolbar input[type="checkbox"] {
+    display: inline-block;
+    margin: 8px 0;
+}
+.tgpdf-pageselector input {
+    -moz-appearance: textfield;
+    min-width: 16px;
+    text-align: right;
+    width: 40px;
+}
+.tgpdf-pageselector input.visiblePageIsLoading {
+    background-image: url(./images/loading-small.png);
+    background-repeat: no-repeat;
+    background-position: 1px;
+}
+.tgpdf-pageselector input::-webkit-inner-spin-button,
+.tgpdf-pageselector input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.tgpdf-toolbar input:hover {
+    background-color: hsla(0, 0%, 100%, 0.11);
+    border-color: hsla(0, 0%, 0%, 0.4) hsla(0, 0%, 0%, 0.43) hsla(0, 0%, 0%, 0.45);
+}
+.tgpdf-toolbar input:focus {
+    background-color: hsla(0, 0%, 100%, 0.15);
+    border-color: hsla(204, 100%, 65%, 0.8) hsla(204, 100%, 65%, 0.85) hsla(204, 100%, 65%, 0.9);
+}
+.tgpdf label {
+    min-width: 16px;
+    padding: 3px 6px 3px 2px;
+    margin: 4px 2px 4px 0;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    color: hsl(0, 0%, 85%);
+    color: var(--label-color);
+    font-size: 12px;
+    line-height: 14px;
+    text-align: left;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+.tgpdf ul {
+    padding: 12px;
+}
+
+.tgpdf-setting-title {
+    color: hsl(0, 0%, 85%);
+    color: var(--label-color);
+    padding: 6px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.tgpdf-sb-settings input[type="number"],
+.tgpdf-sb-settings input[type="text"] {
+    display: inline-block;
+    width: 3em;
+    font-size: 60%;
+}
+
+.tgpdf-toolbar {
+    position: relative;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    cursor: default;
+    width: 100%;
+}
+.tgpdf-nav {
+    height: 32px;
+}
+
+.tgpdf-nav-middle {
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+.tgpdf.ltr .tgpdf-nav-left,
+.tgpdf.rtl .tgpdf-nav-right {
+    float: left;
+}
+.tgpdf.ltr .tgpdf-nav-right,
+.tgpdf.rtl .tgpdf-nav-left {
+    float: right;
+}
+.tgpdf.ltr .tgpdf-nav-left > *,
+.tgpdf.ltr .tgpdf-nav-middle > *,
+.tgpdf.ltr .tgpdf-nav-right > *,
+.tgpdf.ltr .tgpdf-findbar * {
+    position: relative;
+    float: left;
+}
+.tgpdf.rtl .tgpdf-nav-left > *,
+.tgpdf.rtl .tgpdf-nav-middle > *,
+.tgpdf.rtl .tgpdf-nav-right > *,
+.tgpdf.rtl .tgpdf-findbar * {
+    position: relative;
+    float: right;
+}
+
+.tgpdf-spacer-v {
+    display: block;
+    padding: 8px 0;
+    margin: 8px 4px;
+    width: 1px;
+    background-color: hsla(0, 0%, 0%, 0.5);
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+.tgpdf.ltr .tgpdf-spacer-v {
+    margin-left: 2px;
+}
+.tgpdf.rtl .tgpdf-spacer-v {
+    margin-right: 2px;
+}
+.tgpdf-spacer-h {
+    display: block;
+    margin: 0 0 4px;
+    height: 1px;
+    width: 100%;
+    background-color: hsla(0, 0%, 0%, 0.5);
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+
+/************ ToolbarButtons ***********/
+.tgpdf-tbtn,
+.tgpdf-ovbtn {
+    border: 0 none;
+    background: none;
+    width: 32px;
+    height: 25px;
+}
+.tgpdf-tbtn > span {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    color: hsl(0, 0%, 85%);
+    color: var(--label-color);
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.tgpdf-tbtn,
+.tgpdf-dropdown,
+.tgpdf-ovbtn {
+    min-width: 16px;
+    padding: 2px 6px 0;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    color: hsla(0, 0%, 100%, 0.8);
+    font-size: 12px;
+    line-height: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    -webkit-transition-property: background-color, border-color, box-shadow;
+    transition-property: background-color, border-color, box-shadow;
+    -webkit-transition-duration: 150ms;
+    transition-duration: 150ms;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+.tgpdf.ltr .tgpdf-tbtn,
+.tgpdf.ltr .tgpdf-ovbtn,
+.tgpdf.ltr .tgpdf-dropdown {
+    margin: 3px 2px 4px 0;
+}
+.tgpdf.rtl .tgpdf-tbtn,
+.tgpdf.rtl .tgpdf-ovbtn,
+.tgpdf.rtl .tgpdf-dropdown {
+    margin: 3px 0 4px 2px;
+}
+.tgpdf-tbtn:hover,
+.tgpdf-tbtn:focus,
+.tgpdf-dropdown,
+.tgpdf-ovbtn {
+    background-color: hsla(0, 0%, 0%, 0.12);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    border: 1px solid hsla(0, 0%, 0%, 0.35);
+    border-color: hsla(0, 0%, 0%, 0.32) hsla(0, 0%, 0%, 0.38) hsla(0, 0%, 0%, 0.42);
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.15) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+}
+.tgpdf-tbtn:hover:active,
+.tgpdf-ovbtn:hover:active,
+.tgpdf-dropdown:hover:active {
+    background-color: hsla(0, 0%, 0%, 0.2);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    border-color: hsla(0, 0%, 0%, 0.35) hsla(0, 0%, 0%, 0.4) hsla(0, 0%, 0%, 0.45);
+    box-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.1) inset, 0 0 1px hsla(0, 0%, 0%, 0.2) inset, 0 1px 0 hsla(0, 0%, 100%, 0.05);
+    -webkit-transition-property: background-color, border-color, box-shadow;
+    transition-property: background-color, border-color, box-shadow;
+    -webkit-transition-duration: 10ms;
+    transition-duration: 10ms;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+}
+.tgpdf-tbtn[disabled]:hover,
+.tgpdf-tbtn[disabled]:focus,
+.tgpdf-dropdown[disabled],
+.tgpdf-ovbtn[disabled],
+.tgpdf-dropdown[disabled],
+.tgpdf button[disabled],
+.tgpdf select[disabled],
+.tgpdf [disabled] select,
+.tgpdf [disabled] button,
+.tgpdf [disabled] label,
+.tgpdf [disabled] input {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.tgpdf.ltr .tgpdf-dropdown {
+    background-position: 95%;
+}
+.tgpdf.rtl .tgpdf-dropdown {
+    background-position: 5%;
+}
+.tgpdf-dropdown > select {
+    min-width: 140px;
+    font-size: 12px;
+    color: hsl(0, 0%, 95%);
+    margin: 0;
+    padding: 3px 2px 2px;
+    border: none;
+    background: rgba(0, 0, 0, 0);
+}
+.tgpdf-dropdown > select > option {
+    background: hsl(0, 0%, 24%);
+}
+.tgpdf-tbar-spacer {
+    width: 30px;
+    display: inline-block;
+    height: 1px;
+}
+.tgpdf-tbtn::before {
+    position: absolute;
+    display: inline-block;
+    top: 4px;
+    left: 7px;
+}
+.tgpdf-tbtn.bookmark {
+    box-sizing: border-box;
+    outline: none;
+    padding-top: 4px;
+    text-decoration: none;
+}
+.tgpdf-tbtn.tgpdfSidebarNotification::after {
+    position: absolute;
+    display: inline-block;
+    top: 1px;
+    content: "";
+    background-color: #70db55;
+    height: 9px;
+    width: 9px;
+    border-radius: 50%;
+}
+.tgpdf.ltr .tgpdf-tbtn.tgpdfSidebarNotification::after {
+    left: 17px;
+}
+.tgpdf.rtl .tgpdf-tbtn.tgpdfSidebarNotification::after {
+    right: 17px;
+}
+
+.tgpdf-nav,
+.tgpdf-findbar,
+.tgpdf-menu {
+    position: relative;
+    height: 32px;
+    background-color: #474747;
+    background-image: url(./images/texture.png), -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 32%, 0.99)), to(hsla(0, 0%, 27%, 0.95)));
+    background-image: url(./images/texture.png), linear-gradient(hsla(0, 0%, 32%, 0.99), hsla(0, 0%, 27%, 0.95));
+}
+.tgpdf.ltr .tgpdf-nav,
+.tgpdf-findbar,
+.tgpdf-menu {
+    box-shadow: inset 0 1px 1px hsla(0, 0%, 0%, 0.15), inset 0 -1px 0 hsla(0, 0%, 100%, 0.05), 0 1px 0 hsla(0, 0%, 0%, 0.15), 0 1px 1px hsla(0, 0%, 0%, 0.1);
+}
+.tgpdf.rtl .tgpdf-nav,
+.tgpdf-findbar,
+.tgpdf-menu {
+    box-shadow: inset 0 1px 1px hsla(0, 0%, 0%, 0.15), inset 0 -1px 0 hsla(0, 0%, 100%, 0.05), 0 1px 0 hsla(0, 0%, 0%, 0.15), 0 1px 1px hsla(0, 0%, 0%, 0.1);
+}
+.tgpdf-findbar,
+.tgpdf-menu {
+    top: 32px;
+    position: absolute;
+    z-index: 10000;
+    height: auto;
+    min-width: 16px;
+    padding: 0 6px;
+    margin: 4px 2px;
+    color: hsl(0, 0%, 85%);
+    font-size: 12px;
+    line-height: 14px;
+    text-align: left;
+    cursor: default;
+}
+.tgpdf-menu {
+    padding: 6px;
+    height: auto;
+    z-index: 30000;
+}
+.tgpdf.ltr .tgpdf-menu {
+    right: 4px;
+}
+.tgpdf.rtl .tgpdf-menu {
+    left: 4px;
+}
+.tgpdf-mnu-cnt {
+    max-width: 200px;
+    max-height: 400px;
+    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: -4px;
+}
+.tgpdf-mnu-cnt.tgpdf-hiddenScrollModeButtons > .tgpdf-scrollModeButtons,
+.tgpdf-mnu-cnt.tgpdf-hiddenSpreadModeButtons > .tgpdf-spreadModeButtons {
+    display: none !important;
+}
+.tgpdf.ltr .tgpdf-mnu-cnt .tgpdf-tbtn::before {
+    left: 4px;
+}
+.tgpdf.rtl .tgpdf-mnu-cnt .tgpdf-tbtn::before {
+    right: 4px;
+}
+.tgpdf-mnu-cnt .tgpdf-tbtn.tgpdf-bookmark {
+    padding-top: 5px;
+}
+.tgpdf-bookmark[href="#"] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.tgpdf-mnu-cnt .tgpdf-tbtn {
+    position: relative;
+    margin: 0 0 4px;
+    padding: 3px 0 1px;
+    height: auto;
+    min-height: 25px;
+    width: auto;
+    min-width: 100%;
+    white-space: normal;
+}
+.tgpdf-mnu-cnt .tgpdf-tbtn > span {
+    width: auto;
+    height: auto;
+}
+.tgpdf.ltr .tgpdf-mnu-cnt .tgpdf-tbtn {
+    padding-left: 24px;
+    text-align: left;
+    margin-left: 0;
+}
+.tgpdf.rtl .tgpdf-mnu-cnt .tgpdf-tbtn {
+    padding-right: 24px;
+    text-align: right;
+    margin-right: 0;
+}
+.tgpdf.ltr .tgpdf-mnu-cnt .tgpdf-tbtn.tgpdf-bookmark {
+    padding-left: 27px;
+}
+.tgpdf.rtl .tgpdf-mnu-cnt .tgpdf-tbtn.tgpdf-bookmark {
+    padding-right: 27px;
+}
+.tgpdf.ltr .tgpdf-mnu-cnt .tgpdf-tbtn > span {
+    padding-left: 4px;
+}
+.tgpdf.rtl .tgpdf-mnu-cnt .tgpdf-tbtn > span {
+    padding-right: 4px;
+}
+
+.tgpdf-mnu-separator {
+    display: block;
+    margin: 0 0 4px;
+    height: 1px;
+    width: 100%;
+    background-color: hsla(0, 0%, 0%, 0.5);
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.08);
+}
+
+.tgpdf-pageselector label {
+    padding: 0;
+}
+
+/************** Sidebar resizer *********************/
+.tgpdf-loadingBar {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: #333;
+    border-bottom: 1px solid #333;
+}
+
+.tgpdf-loadingBar .tgpdf-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #ddd;
+    overflow: hidden;
+    -webkit-transition: width 200ms;
+    transition: width 200ms;
+}
+@-webkit-keyframes tgpdf-progressIndeterminate {
+    0% {
+        left: -142px;
+    }
+    100% {
+        left: 0;
+    }
+}
+@keyframes tgpdf-progressIndeterminate {
+    0% {
+        left: -142px;
+    }
+    100% {
+        left: 0;
+    }
+}
+.tgpdf-loadingBar .tgpdf-progress.indeterminate {
+    background-color: #999;
+    -webkit-transition: none;
+    transition: none;
+}
+.tgpdf-loadingBar .tgpdf-progress.indeterminate .glimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: calc(100% + 150px);
+    background: repeating-linear-gradient(135deg, #bbb 0, #999 5px, #999 45px, #ddd 55px, #ddd 95px, #bbb 100px);
+    -webkit-animation: tgpdf-progressIndeterminate 950ms linear infinite;
+    animation: tgpdf-progressIndeterminate 950ms linear infinite;
+}
+
+/************** Sidebar resizer *********************/
+.tgpdf-sb-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    z-index: 200;
+    cursor: ew-resize;
+}
+.tgpdf.ltr .tgpdf-sb-resizer {
+    right: -6px;
+}
+.tgpdf.rtl .tgpdf-sb-resizer {
+    left: -6px;
+}
+
+/************** Door Hanger *********************/
+.tgpdf-doorhanger,
+.tgpdf-doorhanger-right {
+    border: 1px solid hsla(0, 0%, 0%, 0.5);
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.tgpdf-doorhanger:after,
+.tgpdf-doorhanger:before,
+.tgpdf-doorhanger-right:after,
+.tgpdf-doorhanger-right:before {
+    bottom: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.tgpdf-doorhanger:after,
+.tgpdf-doorhanger-right:after {
+    border-bottom-color: hsla(0, 0%, 32%, 0.99);
+    border-width: 8px;
+}
+.tgpdf-doorhanger:before,
+.tgpdf-doorhanger-right:before {
+    border-bottom-color: hsla(0, 0%, 0%, 0.5);
+    border-width: 9px;
+}
+.tgpdf.ltr .tgpdf-doorhanger:after,
+.tgpdf.rtl .tgpdf-doorhanger-right:after {
+    left: 13px;
+    margin-left: -8px;
+}
+.tgpdf.ltr .tgpdf-doorhanger:before,
+.tgpdf.rtl .tgpdf-doorhanger-right:before {
+    left: 13px;
+    margin-left: -9px;
+}
+.tgpdf.rtl .tgpdf-doorhanger:after,
+.tgpdf.ltr .tgpdf-doorhanger-right:after {
+    right: 13px;
+    margin-right: -8px;
+}
+.tgpdf.rtl .tgpdf-doorhanger:before,
+.tgpdf.ltr .tgpdf-doorhanger-right:before {
+    right: 13px;
+    margin-right: -9px;
+}
+
+/************* Sidebar Thumbnail *********************/
+.tgpdf-sb-thumbnails {
+    position: absolute;
+    width: calc(100% - 60px);
+    top: 0;
+    bottom: 0;
+    padding: 10px 30px 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tgpdf-sb-thumbnails > a:active,
+.tgpdf-sb-thumbnails > a:focus {
+    outline: 0;
+}
+.tgpdf-thm {
+    margin: 0 10px 5px;
+}
+.tgpdf.ltr .tgpdf-thm {
+    float: left;
+}
+.tgpdf.rtl .tgpdf-thm {
+    float: right;
+}
+.tgpdf-sb-thumbnails > a:last-of-type > .tgpdf-thm {
+    margin-bottom: 10px;
+}
+.tgpdf-sb-thumbnails > a:last-of-type > .tgpdf-thm:not([data-loaded]) {
+    margin-bottom: 9px;
+}
+.tgpdf-thm:not([data-loaded]) {
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    margin: -1px 9px 4px;
+}
+.tgpdf-thm-img {
+    border: 1px solid transparent;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
+    z-index: 99;
+    background-color: #fff;
+    background-clip: content-box;
+}
+.tgpdf-thm-sr {
+    border-radius: 2px;
+    padding: 7px;
+}
+.tgpdf a:focus > .tgpdf-thm > .tgpdf-thm-sr > .tgpdf-thm-img,
+.tgpdf-thm:hover > .tgpdf-thm-sr > .tgpdf-thm-img {
+    opacity: 0.9;
+}
+.tgpdf a:focus > .tgpdf-thm > .tgpdf-thm-sr,
+.tgpdf-thm:hover > .tgpdf-thm-sr {
+    background-color: hsla(0, 0%, 100%, 0.15);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.2) inset, 0 0 1px hsla(0, 0%, 0%, 0.2);
+    color: hsla(0, 0%, 100%, 0.9);
+}
+.tgpdf-thm.selected > .tgpdf-thm-sr > .tgpdf-thm-img {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.5);
+    opacity: 1;
+}
+.tgpdf-thm.selected > .tgpdf-thm-sr {
+    background-color: hsla(0, 0%, 100%, 0.3);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.1) inset, 0 0 1px hsla(0, 0%, 0%, 0.2);
+    color: hsla(0, 0%, 100%, 1);
+}
+
+/************* Sidebar Outline *********************/
+.tgpdf-sb-outline,
+.tgpdf-sb-attachments {
+    position: absolute;
+    width: calc(100% - 8px);
+    top: 0;
+    bottom: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.tgpdf-sb-outline {
+    padding: 4px 4px 0;
+}
+.tgpdf-sb-attachments {
+    padding: 3px 4px 0;
+}
+.tgpdf.ltr .tgpdf-outl-deep > .tgpdf-outitm,
+.tgpdf.ltr .tgpdf-outitm > .tgpdf-outitms {
+    margin-left: 20px;
+}
+.tgpdf.rtl .tgpdf-outl-deep > .tgpdf-outitm,
+.tgpdf.rtl .tgpdf-outitm > .tgpdf-outitms {
+    margin-right: 20px;
+}
+.tgpdf-outitm > a,
+.tgpdf-attachitm > button {
+    text-decoration: none;
+    display: inline-block;
+    min-width: 95%;
+    min-width: calc(100% - 4px);
+    height: auto;
+    margin-bottom: 1px;
+    border-radius: 2px;
+    color: hsla(0, 0%, 100%, 0.8);
+    font-size: 13px;
+    line-height: 15px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    white-space: normal;
+}
+.tgpdf-attachitm > button {
+    border: 0 none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.tgpdf.ltr .tgpdf-outitm > a {
+    padding: 2px 0 5px 4px;
+}
+.tgpdf.ltr .tgpdf-attachitm > button {
+    padding: 2px 0 3px 7px;
+    text-align: left;
+}
+.tgpdf.rtl .tgpdf-outitm > a {
+    padding: 2px 4px 5px 0;
+}
+.tgpdf.rtl .tgpdf-attachitm > button {
+    padding: 2px 7px 3px 0;
+    text-align: right;
+}
+.tgpdf .tgpdf-out-togl {
+    position: relative;
+    height: 0;
+    width: 0;
+    color: hsla(0, 0%, 100%, 0.5);
+}
+.tgpdf .tgpdf-out-togl::before {
+    content: url(./images/treeitem-expanded.png);
+    display: inline-block;
+    position: absolute;
+}
+.tgpdf.ltr .tgpdf-out-togl.tgpdf-outitm-hidden::before {
+    content: url(./images/treeitem-collapsed.png);
+}
+.tgpdf.rtl .tgpdf-out-togl.tgpdf-outitm-hidden::before {
+    content: url(./images/treeitem-collapsed-rtl.png);
+}
+.tgpdf .tgpdf-out-togl.tgpdf-outitm-hidden ~ .tgpdf-outitms {
+    display: none;
+}
+.tgpdf.ltr .tgpdf-out-togl {
+    float: left;
+}
+.tgpdf.rtl .tgpdf-out-togl {
+    float: right;
+}
+.tgpdf.ltr .tgpdf-out-togl::before {
+    right: 4px;
+}
+.tgpdf.rtl .tgpdf-out-togl::before {
+    left: 4px;
+}
+.tgpdf-out-togl:hover,
+.tgpdf-out-togl:hover + a,
+.tgpdf-out-togl:hover ~ .tgpdf-outitms,
+.tgpdf-outitm > a:hover,
+.tgpdf-attachitm > button:hover {
+    background-color: hsla(0, 0%, 100%, 0.02);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.2) inset, 0 0 1px hsla(0, 0%, 0%, 0.2);
+    border-radius: 2px;
+    color: hsla(0, 0%, 100%, 0.9);
+}
+.tgpdf-outitm.selected {
+    background-color: hsla(0, 0%, 100%, 0.08);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 100%, 0.05)), to(hsla(0, 0%, 100%, 0)));
+    background-image: linear-gradient(hsla(0, 0%, 100%, 0.05), hsla(0, 0%, 100%, 0));
+    background-clip: padding-box;
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.05) inset, 0 0 1px hsla(0, 0%, 100%, 0.1) inset, 0 0 1px hsla(0, 0%, 0%, 0.2);
+    color: hsla(0, 0%, 100%, 1);
+}
+
+/************ WASM Loader ***********/
+.tgpdf-wasmLoader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999999;
+}
+
+.tgpdf-wasmLoader > div {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: #333;
+}
+
+.tgpdf-wasmLoader > div > h3 {
+    color: var(--label-color);
+    font-size: 12px;
+}
+.tgpdf-wasmLoader img {
+    margin: 12px;
+    width: 80%;
+}
+.tgpdf-wasmLoader .tgpdf-loadingBar {
+    background-color: #222;
+    width: 80%;
+    margin: 6px auto;
+}
+
+/************ Presentation Mode ***********/
+.tgpdf-viewer.tgpdf-fullscreen:-ms-fullscreen {
+    top: 0 !important;
+    overflow: hidden !important;
+}
+.tgpdf-viewer.tgpdf-fullscreen:-ms-fullscreen::-ms-backdrop {
+    background-color: #000;
+}
+.tgpdf-viewer.tgpdf-fullscreen:-webkit-full-screen {
+    top: 0;
+    border-top: 2px solid transparent;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.tgpdf-viewer.tgpdf-fullscreen:-moz-full-screen {
+    top: 0;
+    border-top: 2px solid transparent;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+.tgpdf-viewer.tgpdf-fullscreen:-ms-fullscreen {
+    top: 0;
+    border-top: 2px solid transparent;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.tgpdf-viewer.tgpdf-fullscreen:fullscreen {
+    top: 0;
+    border-top: 2px solid transparent;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.tgpdf-fullscreen .pdfViewer {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.tgpdf-fullscreen .pdfViewer .page,
+.tgpdf-fullscreen .pdfViewer .spread {
+    display: block;
+}
+
+.tgpdf-fullscreen .pdfViewer .page,
+.tgpdf-fullscreen .pdfViewer.tgpdf-removePageBorders .page {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tgpdf-fullscreen:-ms-fullscreen .pdfViewer .page {
+    margin-bottom: 100% !important;
+}
+
+.tgpdf-fullscreen:-webkit-full-screen .pdfViewer .page {
+    margin-bottom: 100%;
+    border: 0;
+}
+
+.tgpdf-fullscreen:-moz-full-screen .pdfViewer .page {
+    margin-bottom: 100%;
+    border: 0;
+}
+
+.tgpdf-fullscreen:fullscreen .pdfViewer .page {
+    margin-bottom: 100%;
+    border: 0;
+}
+
+.tgpdf-fullscreen:-webkit-full-screen a:not(.internalLink) {
+    display: none;
+}
+.tgpdf-fullscreen:-moz-full-screen a:not(.internalLink) {
+    display: none;
+}
+.tgpdf-fullscreen:-ms-fullscreen a:not(.internalLink) {
+    display: none;
+}
+.tgpdf-fullscreen:fullscreen a:not(.internalLink) {
+    display: none;
+}
+.tgpdf-fullscreen:-webkit-full-screen .textLayer > span {
+    cursor: none;
+}
+.tgpdf-fullscreen:-moz-full-screen .textLayer > span {
+    cursor: none;
+}
+.tgpdf-fullscreen:-ms-fullscreen .textLayer > span {
+    cursor: none;
+}
+.tgpdf-fullscreen:fullscreen .textLayer > span {
+    cursor: none;
+}
+.tgpdf-fullscreen.tgpdf-fullscreen-controls > *,
+.tgpdf-fullscreen.tgpdf-fullscreenControls .textLayer > span {
+    cursor: default;
+}
+
+/************ Elipsis effect ****/
+@keyframes tgpdf-lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes tgpdf-lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes tgpdf-lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+@keyframes tgpdf-lds-horz-rotate {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(500%, 0);
+    }
+}
+
+.tgpdf-lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.tgpdf-lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: black;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.tgpdf-lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: tgpdf-lds-ellipsis1 0.6s infinite;
+}
+.tgpdf-lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: tgpdf-lds-ellipsis2 0.6s infinite;
+}
+.tgpdf-lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: tgpdf-lds-ellipsis2 0.6s infinite;
+}
+.tgpdf-lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: tgpdf-lds-ellipsis3 0.6s infinite;
+}
+
+/************ PDF Doc ***********/
+.tgpdf-splash-default {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 999;
+    opacity: 0;
+    transition: all 1s;
+    font-size: 2em;
+}
+.tgpdf-splash-default.tgpdf-active {
+    opacity: 1;
+}
+
+.tgpdf-splash-default > div {
+    position: relative;
+    /* border: 2px solid whitesmoke; */
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.tgpdf-splash-default h2 {
+}
+
+.tgpdf-splash-default img {
+    margin: 16px;
+    width: 4em;
+}
+
+.tgpdf-splash-default p {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.tgpdf-splash-default button {
+    background-color: #009688;
+    border: none;
+    border-radius: 10px;
+    padding: 1em;
+    font-weight: bold;
+    font-size: 70%;
+}
+
+.tgpdf-splash-default button:hover {
+    background-color: #00695f;
+}
+
+/************ PDF Doc ***********/
+.tgpdf-zoom-helper {
+    background: inherit;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.tgpdf-doc {
+    box-sizing: border-box;
+    width: 100%;
+    transform-origin: left top;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.tgpdf-page {
+    position: relative;
+    direction: ltr;
+    /* margin: 1px auto -8px auto; */
+    overflow: visible;
+    border: 9px solid transparent;
+    background-clip: content-box;
+    -webkit-border-image: url(./images/shadow.png) 9 9 repeat;
+    -o-border-image: url(./images/shadow.png) 9 9 repeat;
+    border-image: url(./images/shadow.png) 9 9 repeat;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.tgpdf-page canvas,
+.tgpdf-page-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.tgpdf-page-overlay {
+    background: #ccc;
+    mix-blend-mode: multiply;
+}
+.tgpdf-paragraph,
+.tgpdf-sentence {
+    color: white;
+    font-size: 8px;
+    position: absolute;
+}
+
+.tgpdf-sentence.tgpdf-can-hover {
+    cursor: pointer;
+}
+
+.tgpdf-paragraph > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tgpdf-page-spinner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.tgpdf-sp-large {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0.3em;
+    background: white;
+    opacity: 0.5;
+}
+
+.tgpdf-sp-small {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tgpdf-sp-progress {
+    width: 20%;
+    background: black;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+    height: 100%;
+    animation: tgpdf-lds-horz-rotate 1s infinite;
+}
+
+/************ High Resolution ***********/
+@media screen and (-webkit-min-device-pixel-ratio: 1.1), screen and (min-resolution: 1.1dppx) {
+    .tgpdf-mnu-cnt .tgpdf-tbtn::before {
+        -webkit-transform: scale(0.5);
+        transform: scale(0.5);
+        top: -4px;
+    }
+    .tgpdf.ltr .tgpdf-mnu-cnt .tgpdf-tbtn::before {
+        left: -2px;
+    }
+    .tgpdf.rtl .tgpdf-mnu-cnt .tgpdf-tbtn::before {
+        left: 186px;
+    }
+    .tgpdf-tbtn::before {
+        -webkit-transform: scale(0.5);
+        transform: scale(0.5);
+        top: -5px;
+        left: -1px;
+    }
+
+    .tgpdf-out-togl::before {
+        -webkit-transform: scale(0.5);
+        transform: scale(0.5);
+        top: -1px;
+        content: url(./images/treeitem-expanded@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-out-togl.tgpdf-outitm-hidden::before {
+        content: url(./images/treeitem-collapsed@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-out-togl.tgpdf-outitm-hidden::before {
+        content: url(./images/treeitem-collapsed-rtl@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-out-togl::before {
+        right: 0;
+    }
+    .tgpdf.rtl .tgpdf-out-togl::before {
+        left: 0;
+    }
+    .tgpdf-pageselector input.tgpdf-visiblePageIsLoading,
+    .tgpdf-findbar input[data-status="pending"] {
+        background-image: url(./images/loading-small@2x.png);
+        background-size: 16px 17px;
+    }
+}
+
+/************ Print ***********/
+@media print {
+    body {
+        background: transparent none;
+    }
+    .tgpdf-sidebar,
+    .tgpdf-menu,
+    .tgpdf-toolbar {
+        display: none;
+    }
+    .tgpdf-viewer {
+        overflow: visible;
+    }
+    .tgpdf-main,
+    .tgpdf-viewer,
+    .page,
+    .page canvas {
+        position: static;
+        padding: 0;
+        margin: 0;
+    }
+    .page {
+        float: left;
+        display: none;
+        border: none;
+        box-shadow: none;
+        background-clip: content-box;
+        background-color: #fff;
+    }
+    .page[data-loaded] {
+        display: block;
+    }
+    .fileInput {
+        display: none;
+    }
+    body[data-pdfjsprinting] .tgpdf {
+        display: none;
+    }
+    body[data-pdfjsprinting] .tgpdf-print {
+        display: block;
+    }
+    .tgpdf-print {
+        height: 100%;
+    }
+    .tgpdf-print > div {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        overflow: visible;
+        page-break-after: always;
+        page-break-inside: avoid;
+    }
+    .tgpdf-print canvas,
+    .tgpdf-print img {
+        display: block;
+    }
+}
+
+/************ Responsive ***********/
+
+.tgpdf-show-xs,
+.tgpdf-show-sm,
+.tgpdf-show-md,
+.tgpdf-show-lg,
+.tgpdf-show-xl {
+    display: none;
+}
+@media all and (min-width: 900px) {
+    .tgpdf-hide-xl {
+        display: none;
+    }
+    .tgpdf-show-xl {
+        display: inherit;
+    }
+}
+@media all and (max-width: 900px) {
+    .tgpdf-nav-middle {
+        display: table;
+        margin: auto;
+        left: auto;
+        position: inherit;
+        -webkit-transform: none;
+        transform: none;
+    }
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg {
+        display: none;
+    }
+    .tgpdf-show-lg {
+        display: inherit;
+    }
+}
+@media all and (max-width: 840px) {
+    .tgpdf.ltr.tgpdf-sidebarOpen .tgpdf-viewer {
+        left: 0 !important;
+    }
+    .tgpdf.rtl.tgpdf-sidebarOpen .tgpdf-viewer {
+        right: 0 !important;
+    }
+    .tgpdf-sb-content {
+        background-color: hsla(0, 0%, 0%, 0.7);
+    }
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg,
+    .tgpdf-hide-md {
+        display: none;
+    }
+    .tgpdf-show-lg,
+    .tgpdf-hide-md {
+        display: inherit;
+    }
+}
+@media all and (max-width: 770px) {
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg,
+    .tgpdf-hide-md {
+        display: none;
+    }
+    .tgpdf-show-md {
+        display: inherit;
+    }
+}
+@media all and (max-width: 700px) {
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg,
+    .tgpdf-hide-md {
+        display: none;
+    }
+    .tgpdf-show-md {
+        display: inherit;
+    }
+}
+@media all and (max-width: 640px) {
+    .tgpdf-tbar-spacer {
+        width: 0;
+    }
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg,
+    .tgpdf-hide-md,
+    .tgpdf-hide-sm {
+        display: none;
+    }
+    .tgpdf-show-sm {
+        display: inherit;
+    }
+    .tgpdf-splash-default {
+        font-size: 1.5em;
+    }
+}
+@media all and (max-width: 535px) {
+    .tgpdf-hide-xl,
+    .tgpdf-hide-lg,
+    .tgpdf-hide-md,
+    .tgpdf-hide-sm,
+    .tgpdf-hide-xs {
+        display: none;
+    }
+    .tgpdf-show-xs {
+        display: inherit;
+    }
+}
+/*********************************************************************
+                             ICONS                                    
+**********************************************************************/
+.tgpdf-i-about::before {
+    content: url(./images/about.png);
+}
+.tgpdf-i-annotation-check::before {
+    content: url(./images/annotation-check.svg);
+}
+.tgpdf-i-annotation-comment::before {
+    content: url(./images/annotation-comment.svg);
+}
+.tgpdf-i-annotation-help::before {
+    content: url(./images/annotation-help.svg);
+}
+.tgpdf-i-annotation-insert::before {
+    content: url(./images/annotation-insert.svg);
+}
+.tgpdf-i-annotation-key::before {
+    content: url(./images/annotation-key.svg);
+}
+.tgpdf-i-annotation-newparagraph::before {
+    content: url(./images/annotation-newparagraph.svg);
+}
+.tgpdf-i-annotation-noicon::before {
+    content: url(./images/annotation-noicon.svg);
+}
+.tgpdf-i-annotation-note::before {
+    content: url(./images/annotation-note.svg);
+}
+.tgpdf-i-annotation-paragraph::before {
+    content: url(./images/annotation-paragraph.svg);
+}
+.tgpdf-i-bookmark::before {
+    content: url(./images/bookmark.png);
+}
+.tgpdf-i-buy::before {
+    content: url(./images/buy.png);
+}
+.tgpdf-i-credit::before {
+    content: url(./images/credit.png);
+}
+.tgpdf-i-docProps::before {
+    content: url(./images/docProps.png);
+}
+.tgpdf-i-download::before {
+    content: url(./images/download.png);
+}
+.tgpdf.ltr .tgpdf-i-findNext::before {
+    content: url(./images/findNext.png);
+}
+.tgpdf.rtl .tgpdf-i-findNext::before {
+    content: url(./images/findNext-rtl.png);
+}
+.tgpdf.ltr .tgpdf-i-findPrev::before {
+    content: url(./images/findPrev.png);
+}
+.tgpdf.rtl .tgpdf-i-findPrev::before {
+    content: url(./images/findPrev-rtl.png);
+}
+.tgpdf-i-firstPage::before {
+    content: url(./images/firstPage.png);
+}
+.tgpdf-i-fullScreen::before {
+    content: url(./images/fullScreen.png);
+}
+.tgpdf-i-grabbing::before {
+    content: url(./images/grabbing.cur);
+}
+.tgpdf-i-grab::before {
+    content: url(./images/grab.cur);
+}
+.tgpdf-i-handTool::before {
+    content: url(./images/handTool.png);
+}
+.tgpdf-i-lastPage::before {
+    content: url(./images/lastPage.png);
+}
+.tgpdf-i-loading-icon::before {
+    content: url(./images/loading-icon.gif);
+}
+.tgpdf-i-logout::before {
+    content: url(./images/logout.png);
+}
+.tgpdf-i-menuArrows::before {
+    content: url(./images/menuArrows.png);
+}
+.tgpdf-i-openFile::before {
+    content: url(./images/openFile.png);
+}
+.tgpdf-i-openMenu::before {
+    content: url(./images/openMenu.png);
+}
+.tgpdf.ltr .tgpdf-i-nextPage::before {
+    content: url(./images/pageDown.png);
+}
+.tgpdf.rtl .tgpdf-i-nextPage::before {
+    content: url(./images/pageDown-rtl.png);
+}
+.tgpdf.ltr .tgpdf-i-prevPage::before {
+    content: url(./images/pageUp.png);
+}
+.tgpdf.rtl .tgpdf-i-prevPage::before {
+    content: url(./images/pageUp-rtl.png);
+}
+.tgpdf-i-print::before {
+    content: url(./images/print.png);
+}
+.tgpdf-i-rotateCcw::before {
+    content: url(./images/rotateCcw.png);
+}
+.tgpdf-i-rotateCw::before {
+    content: url(./images/rotateCw.png);
+}
+.tgpdf-i-scrollHorz::before {
+    content: url(./images/scrollHorz.png);
+}
+.tgpdf-i-scrollVert::before {
+    content: url(./images/scrollVert.png);
+}
+.tgpdf-i-scrollWrapped::before {
+    content: url(./images/scrollWrapped.png);
+}
+.tgpdf-i-search::before {
+    content: url(./images/search.png);
+}
+.tgpdf-i-shadow::before {
+    content: url(./images/shadow.png);
+}
+.tgpdf.ltr .tgpdf-i-toggleSidebar::before {
+    content: url(./images/toggleSidebar.png);
+}
+.tgpdf.rtl .tgpdf-i-toggleSidebar::before {
+    content: url(./images/toggleSidebar-rtl.png);
+}
+.tgpdf-i-settings::before {
+    content: url(./images/settings.png);
+}
+.tgpdf-i-spreadEven::before {
+    content: url(./images/spreadEven.png);
+}
+.tgpdf-i-spreadNone::before {
+    content: url(./images/spreadNone.png);
+}
+.tgpdf-i-spreadOdd::before {
+    content: url(./images/spreadOdd.png);
+}
+.tgpdf.ltr .tgpdf-i-treeitem-collapsed::before {
+    content: url(./images/treeitem-collapsed.png);
+}
+.tgpdf.rtl .tgpdf-i-treeitem-collapsed::before {
+    content: url(./images/treeitem-collapsed-rtl.png);
+}
+.tgpdf-i-treeitem-expanded::before {
+    content: url(./images/treeitem-expanded.png);
+}
+.tgpdf-i-attachments::before {
+    content: url(./images/attachments.png);
+}
+.tgpdf.ltr .tgpdf-i-outline::before {
+    content: url(./images/outline.png);
+}
+.tgpdf.rtl .tgpdf-i-outline::before {
+    content: url(./images/outline-rtl.png);
+}
+.tgpdf-i-thumbnail::before {
+    content: url(./images/thumbnail.png);
+}
+.tgpdf-i-zoomIn::before {
+    content: url(./images/zoomIn.png);
+}
+.tgpdf-i-zoomOut::before {
+    content: url(./images/zoomOut.png);
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 1.1), screen and (min-resolution: 1.1dppx) {
+    .tgpdf-i-about::before {
+        content: url(./images/about@2x.png);
+    }
+    .tgpdf-i-bookmark::before {
+        content: url(./images/bookmark@2x.png);
+    }
+    .tgpdf-i-buy::before {
+        content: url(./images/buy@2x.png);
+    }
+    .tgpdf-i-credit::before {
+        content: url(./images/credit@2x.png);
+    }
+    .tgpdf-i-docProps::before {
+        content: url(./images/docProps@2x.png);
+    }
+    .tgpdf-i-download::before {
+        content: url(./images/download@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-findNext::before {
+        content: url(./images/findNext@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-findNext::before {
+        content: url(./images/findNext-rtl@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-findPrev::before {
+        content: url(./images/findPrev@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-findPrev::before {
+        content: url(./images/findPrev-rtl@2x.png);
+    }
+    .tgpdf-i-firstPage::before {
+        content: url(./images/firstPage@2x.png);
+    }
+    .tgpdf-i-fullScreen::before {
+        content: url(./images/fullScreen@2x.png);
+    }
+    .tgpdf-i-handTool::before {
+        content: url(./images/handTool@2x.png);
+    }
+    .tgpdf-i-lastPage::before {
+        content: url(./images/lastPage@2x.png);
+    }
+    .tgpdf-i-loading-icon::before {
+        content: url(./images/loading-icon.gif);
+    }
+    .tgpdf-i-logout::before {
+        content: url(./images/logout@2x.png);
+    }
+    .tgpdf-i-menuArrows::before {
+        content: url(./images/menuArrows@2x.png);
+    }
+    .tgpdf-i-openFile::before {
+        content: url(./images/openFile@2x.png);
+    }
+    .tgpdf-i-openMenu::before {
+        content: url(./images/openMenu@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-nextPage::before {
+        content: url(./images/pageDown@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-nextPage::before {
+        content: url(./images/pageDown-rtl@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-prevPage::before {
+        content: url(./images/pageUp@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-prevPage::before {
+        content: url(./images/pageUp-rtl@2x.png);
+    }
+    .tgpdf-i-print::before {
+        content: url(./images/print@2x.png);
+    }
+    .tgpdf-i-rotateCcw::before {
+        content: url(./images/rotateCcw@2x.png);
+    }
+    .tgpdf-i-rotateCw::before {
+        content: url(./images/rotateCw@2x.png);
+    }
+    .tgpdf-i-scrollHorz::before {
+        content: url(./images/scrollHorz@2x.png);
+    }
+    .tgpdf-i-scrollVert::before {
+        content: url(./images/scrollVert@2x.png);
+    }
+    .tgpdf-i-scrollWrapped::before {
+        content: url(./images/scrollWrapped@2x.png);
+    }
+    .tgpdf-i-search::before {
+        content: url(./images/search@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-toggleSidebar::before {
+        content: url(./images/toggleSidebar@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-toggleSidebar::before {
+        content: url(./images/toggleSidebar-rtl@2x.png);
+    }
+    .tgpdf-i-settings::before {
+        content: url(./images/settings@2x.png);
+    }
+    .tgpdf-i-spreadEven::before {
+        content: url(./images/spreadEven@2x.png);
+    }
+    .tgpdf-i-spreadNone::before {
+        content: url(./images/spreadNone@2x.png);
+    }
+    .tgpdf-i-spreadOdd::before {
+        content: url(./images/spreadOdd@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-treeitem-collapsed::before {
+        content: url(./images/treeitem-collapsed@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-treeitem-collapsed::before {
+        content: url(./images/treeitem-collapsed-rtl@2x.png);
+    }
+    .tgpdf-i-treeitem-expanded::before {
+        content: url(./images/treeitem-expanded@2x.png);
+    }
+    .tgpdf-i-attachments::before {
+        content: url(./images/attachments@2x.png);
+    }
+    .tgpdf.ltr .tgpdf-i-outline::before {
+        content: url(./images/outline@2x.png);
+    }
+    .tgpdf.rtl .tgpdf-i-outline::before {
+        content: url(./images/outline-rtl@2x.png);
+    }
+    .tgpdf-i-thumbnail::before {
+        content: url(./images/thumbnail@2x.png);
+    }
+    .tgpdf-i-zoomIn::before {
+        content: url(./images/zoomIn@2x.png);
+    }
+    .tgpdf-i-zoomOut::before {
+        content: url(./images/zoomOut@2x.png);
+    }
+}
+
+@media (orientation: landscape) {
+}

@@ -58,31 +58,26 @@ stuParState getPrevPageState(clsLayoutAnalyzer* _this, int _pageIndex, const Fon
     }
 };
 
-
-const PdfBlockPtrVector_t& clsLayoutAnalyzer::getPageContent(int16_t _pageIndex, const FontInfo_t& _fontInfo) const
-{
-    auto _this = const_cast<clsLayoutAnalyzer*>(this);
-
+std::shared_ptr<stuProcessedPage> clsLayoutAnalyzer::cacheAndGetProcessedPage(int16_t _pageIndex, const FontInfo_t& _fontInfo) {
     std::shared_ptr<stuProcessedPage> ProcessedPage = nullptr;
 
-    auto CachedContent = _this->CachedProcessedPage.find(_pageIndex);
-    if(CachedContent !=  _this->CachedProcessedPage.end()) {
+    auto CachedContent = this->CachedProcessedPage.find(_pageIndex);
+    if(CachedContent !=  this->CachedProcessedPage.end()) {
         if(CachedContent->second->IsDirty == false) {
-            return  CachedContent->second->Content;
+            return  CachedContent->second;
         }
         ProcessedPage = CachedContent->second;
     }
     debugShow("Start Of Layout Analysis on Page: "<<_pageIndex + 1);
 
-
     stuParState PrevPageParState;
     if(_pageIndex > 0)
-        PrevPageParState = getPrevPageState(_this, _pageIndex, _fontInfo);
+        PrevPageParState = getPrevPageState(this, _pageIndex, _fontInfo);
 
     if(ProcessedPage == nullptr || ProcessedPage->IsDirty == false) {
-        _this->CachedProcessedPage[_pageIndex] =
+        this->CachedProcessedPage[_pageIndex] =
                 std::make_shared<stuProcessedPage>(this->getProcessedPage(_pageIndex, _fontInfo, PrevPageParState));
-        ProcessedPage = _this->CachedProcessedPage[_pageIndex];
+        ProcessedPage = this->CachedProcessedPage[_pageIndex];
     } else {
         updateFirstParagraph(this->Configs, ProcessedPage->Content, PrevPageParState);
         ProcessedPage->IsDirty = false;
@@ -90,7 +85,19 @@ const PdfBlockPtrVector_t& clsLayoutAnalyzer::getPageContent(int16_t _pageIndex,
 
     debugShow("Layout Analysis on Page: "<<_pageIndex + 1<< " Finished.");
 
-    return _this->CachedProcessedPage[_pageIndex]->Content;
+    return this->CachedProcessedPage[_pageIndex];
+}
+
+const PdfBlockPtrVector_t& clsLayoutAnalyzer::getPageContent(int16_t _pageIndex, const FontInfo_t& _fontInfo) const
+{
+    auto _this = const_cast<clsLayoutAnalyzer*>(this);
+    return _this->cacheAndGetProcessedPage(_pageIndex, _fontInfo)->Content;
+}
+
+const PdfBlockPtrVector_t& clsLayoutAnalyzer::getPageSubContent(int16_t _pageIndex, const FontInfo_t& _fontInfo) const
+{
+    auto _this = const_cast<clsLayoutAnalyzer*>(this);
+    return _this->cacheAndGetProcessedPage(_pageIndex, _fontInfo)->SubContent;
 }
 
 PdfItemPtrVector_t mergeVertRulerParts(const PdfItemPtrVector_t& _pageItems) {

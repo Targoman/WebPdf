@@ -517,23 +517,44 @@ PdfBlockPtrVector_t splitBlockToParagraphs(int _pageIndex, const PdfBlockPtr_t &
     return SplittedBlocks;
 }
 
+void postProcessBlockAndAppendParagraphs(
+    const stuConfigsPtr_t& _configs,
+    int16_t _pageIndex,
+    const FontInfo_t& _fontInfo,
+    const PdfBlockPtr_t& _block,
+    PdfBlockPtrVector_t& _container,
+    bool _recursive = false
+) {
+    if(_recursive && _block->innerBlocks().empty() == false) {
+        for(const auto& SubBlock: _block->innerBlocks())
+            postProcessBlockAndAppendParagraphs(_configs, _pageIndex, _fontInfo, SubBlock, _container, true);
+    }
+    if(_block->lines().empty() == false) {
+        _block->replaceLines(LA::mergeOverlappingLines(_configs, _block->lines(), _fontInfo));
+        LA::process4BulletAndNumbering(_configs, _block);
+        auto BlockParagraphs = splitBlockToParagraphs(_pageIndex, _block);
+        for(const auto& Par : BlockParagraphs)
+            _container.push_back(Par);
+    }
+}
 
 stuProcessedPage extractAndEnumerateSentences(const stuConfigsPtr_t& _configs,
                                               int16_t _pageIndex,
                                               const PdfBlockPtrVector_t& _pageBlocks,
                                               const FontInfo_t& _fontInfo,
                                               const stuParState& _prevPageState) {
-    (void)_configs;
-
     stuProcessedPage Result;
     for(const auto& Block : _pageBlocks) {
         if(Block->isMainTextBlock() == false)
             continue;
-        Block->replaceLines(LA::mergeOverlappingLines(_configs, Block->lines(), _fontInfo));
-        LA::process4BulletAndNumbering(_configs, Block);
-        auto BlockParagraphs = splitBlockToParagraphs(_pageIndex, Block);
-        for(const auto& Par : BlockParagraphs)
-            Result.Content.push_back(Par);
+        postProcessBlockAndAppendParagraphs(
+            _configs,
+            _pageIndex,
+            _fontInfo,
+            Block,
+            Result.Content,
+            false
+        );
     }
 
     stuParState PrevParState = _prevPageState;
@@ -544,8 +565,22 @@ stuProcessedPage extractAndEnumerateSentences(const stuConfigsPtr_t& _configs,
         if(Block->location() == enuLocation::Main) {
             if(Block->isMainTextBlock() == false)
                 Result.Content.push_back(Block);
+            postProcessBlockAndAppendParagraphs(
+                _configs,
+                _pageIndex,
+                _fontInfo,
+                Block,
+                Result.SubContent,
+                true
+            );
             PrevParState.LastPageMainBlock = Block;
         }
+
+    if(Result.SubContent.empty() == false) {
+        stuParState PrevParState;
+        for(size_t i = 0; i < Result.SubContent.size(); ++i)
+            PrevParState = splitParagraphSentences(_configs, Result.SubContent.at(i), _pageIndex, PrevParState);
+    }
 
     for(const auto& Block : _pageBlocks)
         if(Block->location() != enuLocation::Main){

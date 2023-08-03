@@ -97,19 +97,34 @@ target_compile_options(webpdf
 target_link_options(webpdf
     PUBLIC
     -Oz
-    -sINVOKE_RUN=0
     -sASSERTIONS=1
     -sELIMINATE_DUPLICATE_FUNCTIONS=1
-    -sFILESYSTEM=0
+    # -sFILESYSTEM=0
     -sMODULARIZE=1
+    -sEXPORTED_FUNCTIONS=["_malloc","_free"]
+    -sTOTAL_MEMORY=256MB
     -flto
     --bind
-    --no-entry
     --post-js ${CMAKE_CURRENT_SOURCE_DIR}/wasm/post.js
-    --closure 1
+    --closure 0
+)
+add_custom_command(
+    OUTPUT
+    wcomp/dist/webpdfui.min.css wcomp/dist/webpdfui.min.js
+    COMMAND
+    wcomp/build.sh
+    DEPENDS
+    webpdf
+    wcomp/src/clsTargomanPdfViewer.mjs 
+    wcomp/src/modules/clsEventTarget.mjs
+    wcomp/src/modules/clsPdfDocumentViewer.mjs
+    wcomp/src/modules/clsTargomanPdfDocumentInterface.mjs
+    wcomp/src/modules/clsTargomanPdfViewerPrivate.mjs
+    wcomp/src/modules/common.mjs
+    wcomp/src/modules/l10n.mjs
+    wcomp/src/modules/UI.mjs    
 )
 endif()
-
 
 # Finalize the settings
 tg_process_all_targets()

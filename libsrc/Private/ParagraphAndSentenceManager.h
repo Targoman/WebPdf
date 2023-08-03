@@ -36,6 +36,7 @@ struct stuPreprocessedPage{
 
 struct stuProcessedPage {
     PdfBlockPtrVector_t Content;
+    PdfBlockPtrVector_t SubContent;
     stuParState LastMainBlockState;
     bool IsDirty;
     stuProcessedPage(const PdfBlockPtrVector_t& _content = {}, const stuParState& _lastMainBlockState = {}) :

@@ -15,9 +15,12 @@ public:
     clsLayoutAnalyzer(const clsPdfiumWrapper& _pdfiumWrapper, const stuConfigsPtr_t &_configs);
 
     const PdfBlockPtrVector_t& getPageContent(int16_t _pageIndex, const FontInfo_t& _fontInfo) const;
+    const PdfBlockPtrVector_t& getPageSubContent(int16_t _pageIndex, const FontInfo_t& _fontInfo) const;
     void clearCache();
 
 private:
+    std::shared_ptr<stuProcessedPage> cacheAndGetProcessedPage(int16_t _pageIndex, const FontInfo_t& _fontInfo);
+
     stuPreprocessedPage getPreprocessedPage(int _pageIndex) const;
     stuProcessedPage getProcessedPage(int16_t _pageIndex, const FontInfo_t& _fontInfo, const stuParState& _prevPageState) const;
     void markStamps(int _pageIndex, PdfItemPtrVector_t& _pageItems, const stuPageMargins& _pageMargins, const stuSize& _pageSize) const;
